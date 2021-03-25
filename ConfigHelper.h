@@ -1,57 +1,58 @@
 // Start as WiFi station
 
-bool startWifiStation(){
-  
+bool startWifiStation()
+{
+
   Serial.printf("[INFO]: Connecting to %s", wificonfig.ssid);
   if (String(WiFi.SSID()) != String(wificonfig.ssid))
   {
-      WiFi.mode(WIFI_STA);
-      WiFi.begin(wificonfig.ssid, wificonfig.password);
-      uint8_t attempts = wificonfig.attempts;
-      while (WiFi.status() != WL_CONNECTED)
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(wificonfig.ssid, wificonfig.password);
+    uint8_t attempts = wificonfig.attempts;
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      if (attempts == 0)
       {
-        if(attempts == 0) {
-          WiFi.disconnect();
-          Serial.println("");
-          return false;
-          
-        }
-        delay(wificonfig.attemptdelay);
-        Serial.print(".");
-        attempts--;
-
+        WiFi.disconnect();
+        Serial.println("");
+        return false;
       }
+      delay(wificonfig.attemptdelay);
+      Serial.print(".");
+      attempts--;
     }
+  }
 
-    // Delete the task bleKeyboard had create to free memory and to not interfere with AsyncWebServer
-      bleKeyboard.end();
-    
-      // Stop BLE from interfering with our WIFI signal
-      btStop();
-      esp_bt_controller_disable();
-      esp_bt_controller_deinit();
-      esp_bt_controller_mem_release(ESP_BT_MODE_BTDM);
+  // Delete the task bleKeyboard had create to free memory and to not interfere with AsyncWebServer
+  bleKeyboard.end();
 
-      Serial.println("");
-      Serial.println("[INFO]: BLE Stopped");  
-      Serial.print("[INFO]: Connected! IP address: ");
-      Serial.println(WiFi.localIP());
+  // Stop BLE from interfering with our WIFI signal
+  btStop();
+  esp_bt_controller_disable();
+  esp_bt_controller_deinit();
+  esp_bt_controller_mem_release(ESP_BT_MODE_BTDM);
 
-      MDNS.begin(wificonfig.hostname);
-      MDNS.addService("http", "tcp", 80);
-    
-      // Set pageNum to 7 so no buttons are displayed and touches are ignored
-      pageNum = 7;
-    
-      // Start the webserver
-      webserver.begin();
-      Serial.println("[INFO]: Webserver started");
-      return true;
+  Serial.println("");
+  Serial.println("[INFO]: BLE Stopped");
+  Serial.print("[INFO]: Connected! IP address: ");
+  Serial.println(WiFi.localIP());
+
+  MDNS.begin(wificonfig.hostname);
+  MDNS.addService("http", "tcp", 80);
+
+  // Set pageNum to 7 so no buttons are displayed and touches are ignored
+  pageNum = 7;
+
+  // Start the webserver
+  webserver.begin();
+  Serial.println("[INFO]: Webserver started");
+  return true;
 }
 
 // Start as WiFi AP
 
-void startWifiAP(){
+void startWifiAP()
+{
 
   WiFi.mode(WIFI_AP);
   WiFi.softAP(wificonfig.ssid, wificonfig.password);
@@ -71,7 +72,7 @@ void startWifiAP(){
   Serial.println("");
   Serial.println("[INFO]: BLE Stopped");
 
-   MDNS.begin(wificonfig.hostname);
+  MDNS.begin(wificonfig.hostname);
   MDNS.addService("http", "tcp", 80);
 
   // Set pageNum to 7 so no buttons are displayed and touches are ignored
@@ -84,10 +85,11 @@ void startWifiAP(){
 
 // Start the default AP
 
-void startDefaultAP(){
+void startDefaultAP()
+{
 
-  const char* ssid = "FreeTouchDeck";
-  const char* password = "defaultpass";
+  const char *ssid = "FreeTouchDeck";
+  const char *password = "defaultpass";
 
   WiFi.mode(WIFI_AP);
   WiFi.softAP(ssid, password);
@@ -114,7 +116,6 @@ void startDefaultAP(){
   // Start the webserver
   webserver.begin();
   Serial.println("[INFO]: Webserver started");
-          
 }
 
 /**
@@ -168,7 +169,8 @@ void configmode()
 
   if (strcmp(wificonfig.wifimode, "WIFI_STA") == 0)
   {
-    if(!startWifiStation()){
+    if (!startWifiStation())
+    {
       startDefaultAP();
       Serial.println("[WARNING]: Could not connect to AP, so started as AP.");
       tft.println("Started as AP because WiFi connection failed.");
@@ -185,7 +187,6 @@ void configmode()
       tft.print("The IP is: ");
       tft.println(WiFi.localIP());
     }
-
   }
   else if (strcmp(wificonfig.wifimode, "WIFI_AP") == 0)
   {
@@ -197,7 +198,6 @@ void configmode()
     tft.println(WiFi.softAPIP());
   }
 }
-
 
 /**
 * @brief This function allows for saving (updating) the WiFi SSID
@@ -225,7 +225,6 @@ bool saveWifiSSID(String ssid)
   wificonfigobject["wifihostname"] = wificonfig.hostname;
   wificonfigobject["attempts"] = wificonfig.attempts;
   wificonfigobject["attemptdelay"] = wificonfig.attemptdelay;
-
 
   if (serializeJsonPretty(doc, file) == 0)
   {
@@ -262,7 +261,6 @@ bool saveWifiPW(String password)
   wificonfigobject["wifihostname"] = wificonfig.hostname;
   wificonfigobject["attempts"] = wificonfig.attempts;
   wificonfigobject["attemptdelay"] = wificonfig.attemptdelay;
-
 
   if (serializeJsonPretty(doc, file) == 0)
   {
@@ -306,7 +304,6 @@ bool saveWifiMode(String wifimode)
   wificonfigobject["attempts"] = wificonfig.attempts;
   wificonfigobject["attemptdelay"] = wificonfig.attemptdelay;
 
-
   if (serializeJsonPretty(doc, file) == 0)
   {
     Serial.println("[WARNING]: Failed to write to file");
@@ -347,37 +344,41 @@ bool checkfile(const char *filename)
   }
 }
 
-bool resetconfig(String file){
+bool resetconfig(String file)
+{
 
- if (file != "menu1" && file != "menu2" && file != "menu3" && file != "menu4" && file != "menu5" && file != "homescreen" && file != "general")
+  if (file != "menu1" && file != "menu2" && file != "menu3" && file != "menu4" && file != "menu5" && file != "homescreen" && file != "general")
   {
     Serial.println("[WARNING]: Invalid reset option. Choose: menu1, menu2, menu3, menu4, menu5, homescreen, or general");
     return false;
   }
 
- if (file == "menu1" || file == "menu2" || file == "menu3" || file == "menu4" || file == "menu5")
- {
-   // Reset a menu config
-  
-  
-   // Delete the corrupted json file
-   String filetoremove = "/config/" + file;
-   if(!filetoremove.endsWith(".json")){
-    filetoremove = filetoremove + ".json";
-   }
-   
-   FILESYSTEM.remove(filetoremove);
-   
-   // Copy default.json to the new config file
-   File defaultfile = FILESYSTEM.open("/config/default.json", "r");
-  
-    size_t n; 
+  if (file == "menu1" || file == "menu2" || file == "menu3" || file == "menu4" || file == "menu5")
+  {
+    // Reset a menu config
+
+    // Delete the corrupted json file
+    String filetoremove = "/config/" + file;
+    if (!filetoremove.endsWith(".json"))
+    {
+      filetoremove = filetoremove + ".json";
+    }
+
+    FILESYSTEM.remove(filetoremove);
+
+    // Copy default.json to the new config file
+    File defaultfile = FILESYSTEM.open("/config/default.json", "r");
+
+    size_t n;
     uint8_t buf[64];
-  
-     if (defaultfile) {
+
+    if (defaultfile)
+    {
       File newfile = FILESYSTEM.open(filetoremove, "w");
-      if (newfile) {
-        while ((n = defaultfile.read(buf, sizeof(buf))) > 0) {
+      if (newfile)
+      {
+        while ((n = defaultfile.read(buf, sizeof(buf))) > 0)
+        {
           newfile.write(buf, n);
         }
         // Close the newly created file
@@ -385,25 +386,25 @@ bool resetconfig(String file){
       }
       Serial.println("[INFO]: Done resetting.");
       Serial.println("[INFO]: Type \"restart\" to reload configuration.");
-      
+
       // Close the default.json file
       defaultfile.close();
-       return true;
-      } 
-      
-    }  
-    else if(file == "homescreen")
-    {
+      return true;
+    }
+  }
+  else if (file == "homescreen")
+  {
 
     // Reset the homescreen
     // For this we do not need to open a default file because we can easily write it ourselfs
     String filetoremove = "/config/" + file;
-    if(!filetoremove.endsWith(".json")){
+    if (!filetoremove.endsWith(".json"))
+    {
       filetoremove = filetoremove + ".json";
     }
-    
+
     FILESYSTEM.remove(filetoremove);
-    
+
     File newfile = FILESYSTEM.open(filetoremove, "w");
     newfile.println("{");
     newfile.println("\"logo0\": \"question.bmp\",");
@@ -418,24 +419,25 @@ bool resetconfig(String file){
     Serial.println("[INFO]: Done resetting homescreen.");
     Serial.println("[INFO]: Type \"restart\" to reload configuration.");
     return true;
-      
-    }
-    else if(file == "general")
+  }
+  else if (file == "general")
+  {
+
+    // Reset the general config
+    // For this we do not need to open a default file because we can easily write it ourselfs
+
+    String filetoremove = "/config/" + file;
+    if (!filetoremove.endsWith(".json"))
     {
-
-      // Reset the general config
-      // For this we do not need to open a default file because we can easily write it ourselfs
-
-      String filetoremove = "/config/" + file;
-    if(!filetoremove.endsWith(".json")){
       filetoremove = filetoremove + ".json";
     }
-    
+
     FILESYSTEM.remove(filetoremove);
-    
+
     File newfile = FILESYSTEM.open(filetoremove, "w");
     newfile.println("{");
     newfile.println("\"menubuttoncolor\": \"#009bf4\",");
+    newfile.println("\"menubuttonbordercolor\": \"#ffffff\",");
     newfile.println("\"functionbuttoncolor\": \"#00efcb\",");
     newfile.println("\"latchcolor\": \"#fe0149\",");
     newfile.println("\"background\": \"#000000\",");
@@ -452,13 +454,11 @@ bool resetconfig(String file){
     Serial.println("[INFO]: Done resetting general config.");
     Serial.println("[INFO]: Type \"restart\" to reload configuration.");
     return true;
-      
-    }
-    else
-    {
-      return false;
-    }
+  }
+  else
+  {
+    return false;
+  }
 
   return false;
-
 }

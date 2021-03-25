@@ -13,7 +13,7 @@
 void drawlatched(int b, int col, int row)
 {
   int offset;
-  if(SCREEN_WIDTH < 480)
+  if (SCREEN_WIDTH < 480)
   {
     offset = 2;
   }
@@ -1326,6 +1326,7 @@ void drawKeypad()
 
         uint8_t b = col + row * 3;
         uint16_t buttonBG;
+        uint16_t buttonBorder = generalconfig.menuButtonBorderColour;
         bool drawTransparent;
         uint16_t imageBGColor = getImageBG(b);
         if (imageBGColor > 0)
@@ -1341,14 +1342,14 @@ void drawKeypad()
         tft.setFreeFont(LABEL_FONT);
         key[b].initButton(&tft, KEY_X + col * (KEY_W + KEY_SPACING_X),
                           KEY_Y + row * (KEY_H + KEY_SPACING_Y), // x, y, w, h, outline, fill, text
-                          KEY_W, KEY_H, TFT_WHITE, buttonBG, TFT_WHITE,
+                          KEY_W, KEY_H, buttonBorder, buttonBG, TFT_WHITE,
                           "", KEY_TEXTSIZE);
         key[b].drawButton();
         drawlogo(b, col, row, drawTransparent, false); // After drawing the button outline we call this to draw a logo.
       }
     }
   }
-  
+
   else if (pageNum == 10)
   {
     // Pagenum 10 means that a JSON config failed to load completely.
@@ -1377,8 +1378,9 @@ void drawKeypad()
         {
 
           // Check if "home.bmp" is a transparent one
-          
+
           uint16_t buttonBG;
+          uint16_t buttonBorder = generalconfig.menuButtonBorderColour;
           bool drawTransparent;
           uint16_t imageBGColor;
 
@@ -1394,11 +1396,11 @@ void drawKeypad()
             buttonBG = generalconfig.menuButtonColour;
             drawTransparent = true;
           }
-          
+
           tft.setFreeFont(LABEL_FONT);
           key[b].initButton(&tft, KEY_X + col * (KEY_W + KEY_SPACING_X),
                             KEY_Y + row * (KEY_H + KEY_SPACING_Y), // x, y, w, h, outline, fill, text
-                            KEY_W, KEY_H, TFT_WHITE, buttonBG, TFT_WHITE,
+                            KEY_W, KEY_H, buttonBorder, buttonBG, TFT_WHITE,
                             "", KEY_TEXTSIZE);
           key[b].drawButton();
           drawlogo(b, col, row, drawTransparent, false);
@@ -1436,6 +1438,7 @@ void drawKeypad()
 
           uint16_t buttonBG;
           bool drawTransparent;
+          uint16_t buttonBorder = generalconfig.menuButtonBorderColour;
           uint16_t imageBGColor;
           if (islatched[index] && b < 5)
           {
@@ -1459,7 +1462,7 @@ void drawKeypad()
           tft.setFreeFont(LABEL_FONT);
           key[b].initButton(&tft, KEY_X + col * (KEY_W + KEY_SPACING_X),
                             KEY_Y + row * (KEY_H + KEY_SPACING_Y), // x, y, w, h, outline, fill, text
-                            KEY_W, KEY_H, TFT_WHITE, buttonBG, TFT_WHITE,
+                            KEY_W, KEY_H, buttonBorder, buttonBG, TFT_WHITE,
                             "", KEY_TEXTSIZE);
           key[b].drawButton();
           // After drawing the button outline we call this to draw a logo.
@@ -1522,7 +1525,7 @@ void printDeviceAddress()
 
     if (i < 5)
     {
-     // Serial.print(":");
+      // Serial.print(":");
       tft.print(":");
     }
   }
@@ -1543,7 +1546,7 @@ void printinfo()
   tft.fillScreen(TFT_BLACK);
   tft.setCursor(1, 3);
   tft.setTextFont(2);
-  if(SCREEN_WIDTH < 480)
+  if (SCREEN_WIDTH < 480)
   {
     tft.setTextSize(1);
   }
@@ -1569,7 +1572,8 @@ void printinfo()
 #endif
 
 #ifdef speakerPin
-  if(generalconfig.beep){
+  if (generalconfig.beep)
+  {
     tft.println("Speaker: Enabled");
   }
   else

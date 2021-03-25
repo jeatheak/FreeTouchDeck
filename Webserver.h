@@ -55,12 +55,12 @@ String handleAPISList()
     File file = root.openNextFile();
     while (file)
     {
-      String filepath = String(file.name()).substring(0,16);
-      if(filepath == "/uploads/config_"){
+      String filepath = String(file.name()).substring(0, 16);
+      if (filepath == "/uploads/config_")
+      {
 
         file = root.openNextFile();
         filecount++;
-        
       }
       else
       {
@@ -69,7 +69,7 @@ String handleAPISList()
         {
           output += ',';
         }
-  
+
         output += "{\"";
         output += filecount;
         output += "\":\"";
@@ -77,7 +77,6 @@ String handleAPISList()
         output += "\"}";
         file = root.openNextFile();
         filecount++;
-
       }
     }
     file.close();
@@ -86,7 +85,6 @@ String handleAPISList()
   root.close();
   return output;
 }
-
 
 /**
 * @brief This function returns information about FreeTouchDeck in a json 
@@ -445,6 +443,8 @@ void handlerSetup()
 
         AsyncWebParameter *menubuttoncolor = request->getParam("menubuttoncolor", true);
         general["menubuttoncolor"] = menubuttoncolor->value().c_str();
+        AsyncWebParameter *menubuttonbordercolor = request->getParam("menubuttonbordercolor", true);
+        general["menubuttonbordercolor"] = menubuttonbordercolor->value().c_str();
         AsyncWebParameter *functionbuttoncolor = request->getParam("functionbuttoncolor", true);
         general["functionbuttoncolor"] = functionbuttoncolor->value().c_str();
         AsyncWebParameter *latchcolor = request->getParam("latchcolor", true);
@@ -485,7 +485,7 @@ void handlerSetup()
         //Modifiers
 
         AsyncWebParameter *modifier1 = request->getParam("modifier1", true);
-        String Modifier1 = modifier1->value().c_str();    
+        String Modifier1 = modifier1->value().c_str();
         general["modifier1"] = Modifier1.toInt();
 
         AsyncWebParameter *modifier2 = request->getParam("modifier2", true);
@@ -546,7 +546,6 @@ void handlerSetup()
           Serial.println("[WARNING]: Failed to write to file");
         }
         file.close();
-        
       }
       else if (savemode == "homescreen")
       {
@@ -1729,9 +1728,7 @@ void handlerSetup()
   });
 
   webserver.on("/apislist", HTTP_GET, [](AsyncWebServerRequest *request) {
-
-      request->send(200, "application/json", handleAPISList());
-
+    request->send(200, "application/json", handleAPISList());
   });
 
   webserver.on("/info", HTTP_GET, [](AsyncWebServerRequest *request) {

@@ -52,14 +52,14 @@
 
 // ------- Uncomment the define below if you want to use SLEEP and wake up on touch -------
 // The pin where the IRQ from the touch screen is connected uses ESP-style GPIO_NUM_* instead of just pinnumber
-#define touchInterruptPin GPIO_NUM_27
+#define touchInterruptPin GPIO_NUM_13
 
 // ------- Uncomment the define below if you want to use a piezo buzzer and specify the pin where the speaker is connected -------
 //#define speakerPin 26
 
 const char *versionnumber = "0.9.11";
 
-    /* Version 0.9.11.
+/* Version 0.9.11.
      *  
      * Fix: F21 in the configurator was F22 as action and F22 was missing from configurator.
      * Fix: "[WARNING]: SPIFFS initialisation failed!" is now "[ERROR]: SPIFFS initialisation failed!"
@@ -229,6 +229,7 @@ struct Generallogos
 struct Config
 {
   uint16_t menuButtonColour;
+  uint16_t menuButtonBorderColour;
   uint16_t functionButtonColour;
   uint16_t backgroundColour;
   uint16_t latchedColour;
@@ -279,16 +280,16 @@ Menu menu6;
 unsigned long previousMillis = 0;
 unsigned long Interval = 0;
 bool displayinginfo;
-char* jsonfilefail = "";
+char *jsonfilefail = "";
 
 // Invoke the TFT_eSPI button class and create all the button objects
 TFT_eSPI_Button key[6];
 
 // Checking for BLE Keyboard version
 #ifndef BLE_KEYBOARD_VERSION
-  #warning Old BLE Keyboard version detected. Please update.
-  #define BLE_KEYBOARD_VERSION "Outdated"
-#endif  
+#warning Old BLE Keyboard version detected. Please update.
+#define BLE_KEYBOARD_VERSION "Outdated"
+#endif
 
 //--------- Internal references ------------
 // (this needs to be below all structs etc..)
@@ -458,79 +459,85 @@ void setup()
   }
 
   // After checking the config files exist, actually load them
-  if(!loadConfig("general")){
+  if (!loadConfig("general"))
+  {
     Serial.println("[WARNING]: general.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset general'.");
     jsonfilefail = "general";
     pageNum = 10;
   }
 
-    // Setup PWM channel for Piezo speaker
+  // Setup PWM channel for Piezo speaker
 
 #ifdef speakerPin
   ledcSetup(2, 500, 8);
 
-if(generalconfig.beep){
-  ledcAttachPin(speakerPin, 2);
-  ledcWriteTone(2, 600);
-  delay(150);
-  ledcDetachPin(speakerPin);
-  ledcWrite(2, 0);
+  if (generalconfig.beep)
+  {
+    ledcAttachPin(speakerPin, 2);
+    ledcWriteTone(2, 600);
+    delay(150);
+    ledcDetachPin(speakerPin);
+    ledcWrite(2, 0);
 
-  ledcAttachPin(speakerPin, 2);
-  ledcWriteTone(2, 800);
-  delay(150);
-  ledcDetachPin(speakerPin);
-  ledcWrite(2, 0);
+    ledcAttachPin(speakerPin, 2);
+    ledcWriteTone(2, 800);
+    delay(150);
+    ledcDetachPin(speakerPin);
+    ledcWrite(2, 0);
 
-  ledcAttachPin(speakerPin, 2);
-  ledcWriteTone(2, 1200);
-  delay(150);
-  ledcDetachPin(speakerPin);
-  ledcWrite(2, 0);
-}
+    ledcAttachPin(speakerPin, 2);
+    ledcWriteTone(2, 1200);
+    delay(150);
+    ledcDetachPin(speakerPin);
+    ledcWrite(2, 0);
+  }
 
 #endif
 
-  if(!loadConfig("homescreen")){
+  if (!loadConfig("homescreen"))
+  {
     Serial.println("[WARNING]: homescreen.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset homescreen'.");
     jsonfilefail = "homescreen";
     pageNum = 10;
   }
-  if(!loadConfig("menu1")){
+  if (!loadConfig("menu1"))
+  {
     Serial.println("[WARNING]: menu1.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset menu1'.");
     jsonfilefail = "menu1";
     pageNum = 10;
   }
-  if(!loadConfig("menu2")){
+  if (!loadConfig("menu2"))
+  {
     Serial.println("[WARNING]: menu2.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset menu2'.");
     jsonfilefail = "menu2";
     pageNum = 10;
   }
-  if(!loadConfig("menu3")){
+  if (!loadConfig("menu3"))
+  {
     Serial.println("[WARNING]: menu3.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset menu3'.");
     jsonfilefail = "menu3";
     pageNum = 10;
   }
-  if(!loadConfig("menu4")){
+  if (!loadConfig("menu4"))
+  {
     Serial.println("[WARNING]: menu4.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset menu4'.");
     jsonfilefail = "menu4";
     pageNum = 10;
   }
-  if(!loadConfig("menu5")){
+  if (!loadConfig("menu5"))
+  {
     Serial.println("[WARNING]: menu5.json seems to be corrupted!");
     Serial.println("[WARNING]: To reset to default type 'reset menu5'.");
     jsonfilefail = "menu5";
     pageNum = 10;
   }
   Serial.println("[INFO]: All configs loaded");
-
-  
 
   strcpy(generallogo.homebutton, "/logos/home.bmp");
   strcpy(generallogo.configurator, "/logos/wifi.bmp");
@@ -579,9 +586,9 @@ if(generalconfig.beep){
 
 void loop(void)
 {
-  
+
   // Check if there is data available on the serial input that needs to be handled.
-  
+
   if (Serial.available())
   {
 
@@ -636,7 +643,7 @@ void loop(void)
       resetconfig(file);
     }
   }
-  
+
   if (pageNum == 7)
   {
 
@@ -678,7 +685,7 @@ void loop(void)
 #endif
 
     if (pressed)
-    {     
+    {
       displayinginfo = false;
       pageNum = 6;
       tft.fillScreen(generalconfig.backgroundColour);
@@ -716,7 +723,7 @@ void loop(void)
 #endif
 
     if (pressed)
-    {     
+    {
       // Return to Settings page
       displayinginfo = false;
       pageNum = 6;
@@ -755,7 +762,7 @@ void loop(void)
 #endif
 
     if (pressed)
-    {     
+    {
       // Load home screen
       displayinginfo = false;
       pageNum = 0;
@@ -778,24 +785,25 @@ void loop(void)
         tft.fillScreen(TFT_BLACK);
         Serial.println("[INFO]: Going to sleep.");
 #ifdef speakerPin
-        if(generalconfig.beep){
-        ledcAttachPin(speakerPin, 2);
-        ledcWriteTone(2, 1200);
-        delay(150);
-        ledcDetachPin(speakerPin);
-        ledcWrite(2, 0);
+        if (generalconfig.beep)
+        {
+          ledcAttachPin(speakerPin, 2);
+          ledcWriteTone(2, 1200);
+          delay(150);
+          ledcDetachPin(speakerPin);
+          ledcWrite(2, 0);
 
-        ledcAttachPin(speakerPin, 2);
-        ledcWriteTone(2, 800);
-        delay(150);
-        ledcDetachPin(speakerPin);
-        ledcWrite(2, 0);
+          ledcAttachPin(speakerPin, 2);
+          ledcWriteTone(2, 800);
+          delay(150);
+          ledcDetachPin(speakerPin);
+          ledcWrite(2, 0);
 
-        ledcAttachPin(speakerPin, 2);
-        ledcWriteTone(2, 600);
-        delay(150);
-        ledcDetachPin(speakerPin);
-        ledcWrite(2, 0);
+          ledcAttachPin(speakerPin, 2);
+          ledcWriteTone(2, 600);
+          delay(150);
+          ledcDetachPin(speakerPin);
+          ledcWrite(2, 0);
         }
 #endif
 
@@ -917,6 +925,7 @@ void loop(void)
         }
 
         uint16_t buttonBG;
+        uint16_t buttonBorder = generalconfig.menuButtonBorderColour;
         bool drawTransparent;
 
         uint16_t imageBGColor;
@@ -958,7 +967,7 @@ void loop(void)
         tft.setFreeFont(LABEL_FONT);
         key[b].initButton(&tft, KEY_X + col * (KEY_W + KEY_SPACING_X),
                           KEY_Y + row * (KEY_H + KEY_SPACING_Y), // x, y, w, h, outline, fill, text
-                          KEY_W, KEY_H, TFT_WHITE, buttonBG, TFT_WHITE,
+                          KEY_W, KEY_H, buttonBorder, buttonBG, TFT_WHITE,
                           "", KEY_TEXTSIZE);
         key[b].drawButton();
 
@@ -975,18 +984,19 @@ void loop(void)
 
       if (key[b].justPressed())
       {
-        
-        // Beep
-        #ifdef speakerPin
-        if(generalconfig.beep){
+
+// Beep
+#ifdef speakerPin
+        if (generalconfig.beep)
+        {
           ledcAttachPin(speakerPin, 2);
           ledcWriteTone(2, 600);
           delay(50);
           ledcDetachPin(speakerPin);
           ledcWrite(2, 0);
         }
-        #endif 
-        
+#endif
+
         int col, row;
 
         if (b == 0)

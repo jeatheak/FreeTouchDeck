@@ -26,10 +26,10 @@ bool loadMainConfig()
   strlcpy(wificonfig.wifimode, doc["wifimode"] | "FAILED", sizeof(wificonfig.wifimode));
   strlcpy(wificonfig.hostname, doc["wifihostname"] | "freetouchdeck", sizeof(wificonfig.hostname));
 
-  uint8_t attempts = doc["attempts"] | 10 ;
+  uint8_t attempts = doc["attempts"] | 10;
   wificonfig.attempts = attempts;
 
-  uint16_t attemptdelay = doc["attemptdelay"] | 500 ;
+  uint16_t attemptdelay = doc["attemptdelay"] | 500;
   wificonfig.attemptdelay = attemptdelay;
 
   configfile.close();
@@ -66,15 +66,21 @@ bool loadConfig(String value)
     DeserializationError error = deserializeJson(doc, configfile);
 
     // Parsing colors
-    const char *menubuttoncolor = doc["menubuttoncolor"] | "#009bf4";         // Get the colour for the menu and back home buttons.
-    const char *functionbuttoncolor = doc["functionbuttoncolor"] | "#00efcb"; // Get the colour for the function buttons.
-    const char *latchcolor = doc["latchcolor"] | "#fe0149";                   // Get the colour to use when latching.
-    const char *bgcolor = doc["background"] | "#000000";                      // Get the colour for the background.
+    const char *menubuttoncolor = doc["menubuttoncolor"] | "#009bf4";             // Get the colour for the menu and back home buttons.
+    const char *menubuttonbordercolor = doc["menubuttonbordercolor"] | "#ffffff"; // Get the colour for the menu and back home buttons.
+    const char *functionbuttoncolor = doc["functionbuttoncolor"] | "#00efcb";     // Get the colour for the function buttons.
+    const char *latchcolor = doc["latchcolor"] | "#fe0149";                       // Get the colour to use when latching.
+    const char *bgcolor = doc["background"] | "#000000";                          // Get the colour for the background.
 
     char menubuttoncolorchar[64];
     strcpy(menubuttoncolorchar, menubuttoncolor);
     unsigned long rgb888menubuttoncolor = convertHTMLtoRGB888(menubuttoncolorchar);
     generalconfig.menuButtonColour = convertRGB888ToRGB565(rgb888menubuttoncolor);
+
+    char menubuttonbordercolorchar[64];
+    strcpy(menubuttonbordercolorchar, menubuttonbordercolor);
+    unsigned long rgb888menubuttonbordercolor = convertHTMLtoRGB888(menubuttonbordercolorchar);
+    generalconfig.menuButtonBorderColour = convertRGB888ToRGB565(rgb888menubuttonbordercolor);
 
     char functionbuttoncolorchar[64];
     strcpy(functionbuttoncolorchar, functionbuttoncolor);
@@ -93,35 +99,35 @@ bool loadConfig(String value)
 
     // Loading general settings
 
-         bool sleepenable = doc["sleepenable"] | false;
-      if (sleepenable)
-      {
-        generalconfig.sleepenable = true;
-        islatched[28] = 1;
-      }
-      else
-      {
-        generalconfig.sleepenable = false;
-      }
-    
-      //uint16_t sleeptimer = doc["sleeptimer"];
-      uint16_t sleeptimer = doc["sleeptimer"] | 60 ;
-      generalconfig.sleeptimer = sleeptimer;
-    
-      bool beep = doc["beep"] | false;
-      generalconfig.beep = beep;
-    
-      uint8_t modifier1 = doc["modifier1"] | 0 ;
-      generalconfig.modifier1 = modifier1;
-    
-      uint8_t modifier2 = doc["modifier2"] | 0 ;
-      generalconfig.modifier2 = modifier2;
-    
-      uint8_t modifier3 = doc["modifier3"] | 0 ;
-      generalconfig.modifier3 = modifier3;
-    
-      uint16_t helperdelay = doc["helperdelay"] | 250 ;
-      generalconfig.helperdelay = helperdelay;
+    bool sleepenable = doc["sleepenable"] | false;
+    if (sleepenable)
+    {
+      generalconfig.sleepenable = true;
+      islatched[28] = 1;
+    }
+    else
+    {
+      generalconfig.sleepenable = false;
+    }
+
+    //uint16_t sleeptimer = doc["sleeptimer"];
+    uint16_t sleeptimer = doc["sleeptimer"] | 60;
+    generalconfig.sleeptimer = sleeptimer;
+
+    bool beep = doc["beep"] | false;
+    generalconfig.beep = beep;
+
+    uint8_t modifier1 = doc["modifier1"] | 0;
+    generalconfig.modifier1 = modifier1;
+
+    uint8_t modifier2 = doc["modifier2"] | 0;
+    generalconfig.modifier2 = modifier2;
+
+    uint8_t modifier3 = doc["modifier3"] | 0;
+    generalconfig.modifier3 = modifier3;
+
+    uint16_t helperdelay = doc["helperdelay"] | 250;
+    generalconfig.helperdelay = helperdelay;
 
     configfile.close();
 
